@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">My App</string>
+    <string name="bibl">Библиотека растений</string>
+    <string name="myrast">Мои растения</string>
+    <string name="vvod">Введите название</string>
+    <string name="naiti">Найти растение</string>
+    <string name="mnogorast">Поиск среди более 10 тысяч видов растений</string>
+    <string name="pomosh">Помощь в уходе за растениями</string>
+    <string name="back">На главную</string>
+    <string name="nazv1">Алоказия Поли</string>
+    <string name="nazv2">Аукуба</string>
+    <string name="nazv3">Каладиум</string>
+    <string name="nazv4">Сциндаптус</string>
+    <string name="kom">Комнатные растения</string>
+</resources>
