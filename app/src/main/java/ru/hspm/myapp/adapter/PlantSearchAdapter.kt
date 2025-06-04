@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.google.gson.annotations.SerializedName
 import ru.hspm.myapp.R
 import ru.hspm.myapp.data.Plant
 
@@ -29,8 +30,14 @@ class PlantSearchAdapter(
 
     override fun onBindViewHolder(holder: PlantViewHolder, position: Int) {
         val plant = plants[position]
-        
-        holder.plantName.text = plant.commonName
+
+        data class Plant(
+            @SerializedName("common_name")
+            val commonName: String?,
+            // другие поля
+        )
+
+        holder.plantName.text = plant.commonName ?: "Без названия"
         holder.plantDescription.text = (plant.scientificName ?: "Научное название отсутствует").toString()
         
         // Load plant image using Coil

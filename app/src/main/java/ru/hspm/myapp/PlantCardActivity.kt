@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.annotations.SerializedName
 import ru.hspm.myapp.api.NetworkModule
 import ru.hspm.myapp.data.Plant
 import kotlinx.coroutines.CoroutineScope
@@ -62,11 +63,25 @@ class PlantCardActivity : AppCompatActivity() {
     }
 
     private suspend fun displayPlantData(plant: Plant) = withContext(Dispatchers.Main) {
-        plantCommonName.text = plant.commonName
-        plantScientificName.text = plant.scientificName.joinToString(", ")
-        wateringInfo.text = "Watering: ${plant.watering}"
-        sunlightInfo.text = "Sunlight: ${plant.sunlight.joinToString(", ")}"
-        cycleInfo.text = "Cycle: ${plant.cycle}"
+        data class Plant(
+            @SerializedName("common_name")
+            val commonName: String?,
+            @SerializedName("scientific_name")
+            val scientificName: List<String>?,
+            @SerializedName("watering")
+            val watering: String?,
+            @SerializedName("sunlight")
+            val sunlight: List<String>?,
+            @SerializedName("cycle")
+            val cycle: String?
+            // другие поля
+        )
+
+        plantCommonName.text = plant.commonName ?: "Без названия"
+        plantScientificName.text = plant.scientificName?.joinToString(", ") ?: "Научное название отсутствует"
+        wateringInfo.text = plant.watering
+        sunlightInfo.text = plant.sunlight.joinToString(", ")
+        cycleInfo.text = plant.cycle
         
 //        plant.defaultImage?.let { image ->
 //            plantImage.load(image.regularUrl) {
