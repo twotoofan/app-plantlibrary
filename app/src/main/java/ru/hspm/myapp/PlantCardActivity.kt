@@ -48,7 +48,7 @@ class PlantCardActivity : AppCompatActivity() {
             try {
                 // Replace "YOUR_API_KEY" with actual API key
                 val response = NetworkModule.perenualApi.getPlants(
-                    apiKey = "YOUR_API_KEY",
+                    apiKey = "sk-lmtr68402c6b1d2e810843",
                     query = plantId.toString()
                 )
                 
