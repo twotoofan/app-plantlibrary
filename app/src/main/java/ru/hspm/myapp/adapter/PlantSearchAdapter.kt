@@ -7,47 +7,23 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.google.gson.annotations.SerializedName
 import ru.hspm.myapp.R
 import ru.hspm.myapp.data.Plant
 
 class PlantSearchAdapter(
-    private var plants: List<Plant> = emptyList(),
     private val onPlantClick: (Plant) -> Unit
 ) : RecyclerView.Adapter<PlantSearchAdapter.PlantViewHolder>() {
 
-    class PlantViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val plantImage: ImageView = view.findViewById(R.id.plantImage)
-        val plantName: TextView = view.findViewById(R.id.plantName)
-        val plantDescription: TextView = view.findViewById(R.id.plantDescription)
-    }
+    private var plants: List<Plant> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlantViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_search_result, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_search_result, parent, false)
         return PlantViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: PlantViewHolder, position: Int) {
-        val plant = plants[position]
-
-        data class Plant(
-            @SerializedName("common_name")
-            val commonName: String?,
-            // другие поля
-        )
-
-        holder.plantName.text = plant.commonName ?: "Без названия"
-        holder.plantDescription.text = (plant.scientificName ?: "Научное название отсутствует").toString()
-        
-        // Load plant image using Coil
-        holder.plantImage.load(plant.defaultImage?.originalUrl) {
-            placeholder(R.drawable.ic_launcher_background)
-            error(R.drawable.ic_launcher_background)
-            crossfade(true)
-        }
-
-        holder.itemView.setOnClickListener { onPlantClick(plant) }
+        holder.bind(plants[position])
+        holder.itemView.setOnClickListener { onPlantClick(plants[position]) }
     }
 
     override fun getItemCount() = plants.size
@@ -56,4 +32,16 @@ class PlantSearchAdapter(
         plants = newPlants
         notifyDataSetChanged()
     }
-} 
+
+    class PlantViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val name: TextView = itemView.findViewById(R.id.plantCommonName)
+        private val scientific: TextView = itemView.findViewById(R.id.plantScientificName)
+        private val image: ImageView = itemView.findViewById(R.id.plantImage)
+
+        fun bind(plant: Plant) {
+            name.text = plant.commonName ?: "Без названия"
+            scientific.text = plant.scientificName?.joinToString(", ") ?: "Научное название отсутствует"
+            image.load(plant.defaultImage?.regularUrl)
+        }
+    }
+}

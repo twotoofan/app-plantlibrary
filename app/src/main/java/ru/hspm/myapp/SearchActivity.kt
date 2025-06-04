@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.hspm.myapp.adapter.PlantSearchAdapter
 import ru.hspm.myapp.api.NetworkModule
+import ru.hspm.myapp.data.Plant
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var searchInput: TextInputEditText
@@ -34,12 +35,12 @@ class SearchActivity : AppCompatActivity() {
         // Setup RecyclerView
         val recyclerView = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.searchResults)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = PlantSearchAdapter { plant ->
-            // Navigate to PlantCardActivity when a plant is clicked
+        adapter = PlantSearchAdapter { plant: Plant ->
             val intent = Intent(this, PlantCardActivity::class.java)
-            intent.putExtra("plant_id", plant.id)
+            intent.putExtra("Plant_id", plant.id)
             startActivity(intent)
         }
+
         recyclerView.adapter = adapter
     }
 

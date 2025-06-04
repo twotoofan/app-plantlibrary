@@ -1,19 +1,25 @@
 package ru.hspm.myapp.data
 
+import com.google.gson.annotations.SerializedName
+
 data class Plant(
-    val id: Int,
-    val commonName: String,
-    val scientificName: List<String>,
-    val defaultImage: PlantImage?,
-    val watering: String,
-    val sunlight: List<String>,
-    val cycle: String
+    @SerializedName("id")
+    val id: Int?,
+    @SerializedName("common_name")
+    val commonName: String?,
+    @SerializedName("scientific_name")
+    val scientificName: List<String>?,
+    @SerializedName("watering")
+    val watering: String?,
+    @SerializedName("sunlight")
+    val sunlight: List<String>?,
+    @SerializedName("cycle")
+    val cycle: String?,
+    @SerializedName("default_image")
+    val defaultImage: DefaultImage?
 )
 
-data class PlantImage(
-    val originalUrl: String,
-    val regularUrl: String,
-    val mediumUrl: String,
-    val smallUrl: String,
-    val thumbnail: String
-) 
+data class DefaultImage(
+    @SerializedName("regular_url")
+    val regularUrl: String?
+)

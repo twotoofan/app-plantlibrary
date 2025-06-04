@@ -12,6 +12,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+data class DefaultImage(
+    @SerializedName("regular_url")
+    val regularUrl: String?
+)
+
 class PlantCardActivity : AppCompatActivity() {
     private lateinit var plantImage: ImageView
     private lateinit var plantCommonName: TextView
@@ -63,32 +68,11 @@ class PlantCardActivity : AppCompatActivity() {
     }
 
     private suspend fun displayPlantData(plant: Plant) = withContext(Dispatchers.Main) {
-        data class Plant(
-            @SerializedName("common_name")
-            val commonName: String?,
-            @SerializedName("scientific_name")
-            val scientificName: List<String>?,
-            @SerializedName("watering")
-            val watering: String?,
-            @SerializedName("sunlight")
-            val sunlight: List<String>?,
-            @SerializedName("cycle")
-            val cycle: String?
-            // другие поля
-        )
-
         plantCommonName.text = plant.commonName ?: "Без названия"
         plantScientificName.text = plant.scientificName?.joinToString(", ") ?: "Научное название отсутствует"
-        wateringInfo.text = plant.watering
-        sunlightInfo.text = plant.sunlight.joinToString(", ")
-        cycleInfo.text = plant.cycle
-        
-//        plant.defaultImage?.let { image ->
-//            plantImage.load(image.regularUrl) {
-//                crossfade(true)
-//                placeholder(R.drawable.ic_launcher_background) // Replace with your placeholder
-//                error(R.drawable.ic_launcher_background) // Replace with your error image
-//            }
-//        }
+        wateringInfo.text = plant.watering ?: ""
+        sunlightInfo.text = plant.sunlight?.joinToString(", ") ?: ""
+        cycleInfo.text = plant.cycle ?: ""
     }
-} 
+
+}
