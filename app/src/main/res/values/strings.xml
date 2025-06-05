@@ -28,4 +28,27 @@
     <string name="unknown_plant_name">Название неизвестно</string>
     <string name="scientific_name_not_available">Научное название отсутствует</string>
     <string name="info_not_available">Информация отсутствует</string>
+
+    <!-- Notification -->
+    <string name="channel_name">Уход за растениями</string>
+    <string name="channel_description">Напоминания об уходе за растениями</string>
+    <string name="notification_title">Уход за растениями</string>
+    <string name="start_notifications">Включить напоминания</string>
+    <string name="stop_notifications">Выключить напоминания</string>
+    <string name="notifications_started">Напоминания включены</string>
+    <string name="notifications_stopped">Напоминания выключены</string>
+    <string name="toggle_notifications">Включить/выключить напоминания</string>
+
+    <string name="tip_1">Не забудьте полить ваши растения!</string>
+    <string name="tip_2">Проверьте освещение ваших растений</string>
+    <string name="tip_3">Время подкормить ваши растения</string>
+    <string name="tip_4">Проверьте влажность почвы</string>
+    <string name="tip_5">Осмотрите листья на наличие вредителей</string>
+
+    <string name="plant_1">Алоэ Вера</string>
+    <string name="plant_2">Фикус</string>
+    <string name="plant_3">Орхидея</string>
+    <string name="plant_4">Кактус</string>
+    <string name="plant_5">Монстера</string>
+
 </resources>
