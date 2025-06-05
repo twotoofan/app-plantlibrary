@@ -29,25 +29,28 @@ class PlantCardActivity : AppCompatActivity() {
 
         initViews()
         
-        // Get plant from intent
-        val plant = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            intent.getSerializableExtra("plant", Plant::class.java)
+        // Get plant ID either from plant object or direct ID
+        val plantId = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            intent.getSerializableExtra("plant", Plant::class.java)?.id
         } else {
             @Suppress("DEPRECATION")
-            intent.getSerializableExtra("plant") as? Plant
-        }
+            (intent.getSerializableExtra("plant") as? Plant)?.id
+        } ?: intent.getIntExtra("plant_id", -1)
 
-        if (plant != null) {
-            displayPlantData(plant)
-        } else {
-            // Fallback to ID if plant object is not available
-            val plantId = intent.getIntExtra("plant_id", -1)
-            if (plantId != -1) {
-                loadPlantData(plantId)
+        if (plantId != -1) {
+            loadPlantData(plantId)
+            
+            // Show basic info while loading if we have a plant object
+            val plant = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                intent.getSerializableExtra("plant", Plant::class.java)
             } else {
-                showError(getString(R.string.error_invalid_plant))
-                finish()
+                @Suppress("DEPRECATION")
+                intent.getSerializableExtra("plant") as? Plant
             }
+            plant?.let { displayBasicInfo(it) }
+        } else {
+            showError(getString(R.string.error_invalid_plant))
+            finish()
         }
     }
 
@@ -66,11 +69,31 @@ class PlantCardActivity : AppCompatActivity() {
         }
     }
 
+    private fun displayBasicInfo(plant: Plant) {
+        try {
+            plantCommonName.text = plant.commonName
+            plantScientificName.text = plant.getDisplayScientificName()
+            
+            val imageUrl = plant.getImageUrl()
+            if (imageUrl.isNotEmpty()) {
+                plantImage.load(imageUrl) {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_launcher_background)
+                    error(R.drawable.ic_launcher_background)
+                }
+            } else {
+                plantImage.setImageResource(R.drawable.ic_launcher_background)
+            }
+        } catch (e: Exception) {
+            // Ignore errors in basic info display as we'll load full details anyway
+        }
+    }
+
     private fun loadPlantData(plantId: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = NetworkModule.perenualApi.getPlantDetails(
-                    apiKey = "sk-lmtr68402c6b1d2e810843",
+                    apiKey = "sk-66R1684169549aba710861",
                     plantId = plantId
                 )
                 
@@ -80,7 +103,6 @@ class PlantCardActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     showError(getString(R.string.error_loading_plant_details, e.message))
-                    finish()
                 }
             }
         }
@@ -88,11 +110,14 @@ class PlantCardActivity : AppCompatActivity() {
 
     private fun displayPlantData(plant: Plant) {
         try {
+            // Update all information with full details
             plantCommonName.text = plant.commonName
             plantScientificName.text = plant.getDisplayScientificName()
-            wateringInfo.text = getString(R.string.watering_format, plant.watering)
-            sunlightInfo.text = getString(R.string.sunlight_format, plant.getDisplaySunlight())
-            cycleInfo.text = getString(R.string.cycle_format, plant.cycle)
+            
+            // Update care information
+            wateringInfo.text = getString(R.string.watering_format, plant.watering.ifEmpty { getString(R.string.info_not_available) })
+            sunlightInfo.text = getString(R.string.sunlight_format, plant.getDisplaySunlight().ifEmpty { getString(R.string.info_not_available) })
+            cycleInfo.text = getString(R.string.cycle_format, plant.cycle.ifEmpty { getString(R.string.info_not_available) })
             
             val imageUrl = plant.getImageUrl()
             if (imageUrl.isNotEmpty()) {

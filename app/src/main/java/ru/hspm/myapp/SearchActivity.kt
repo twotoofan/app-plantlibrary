@@ -74,7 +74,7 @@ class SearchActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = NetworkModule.perenualApi.searchPlants(
-                    apiKey = "sk-lmtr68402c6b1d2e810843",
+                    apiKey = "sk-66R1684169549aba710861",
                     query = query
                 )
                 

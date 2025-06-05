@@ -67,7 +67,7 @@
             android:id="@+id/searchInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Введите название растения"
+            android:hint="@string/vvodtext"
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:maxLines="1" />
@@ -82,7 +82,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:backgroundTint="#6F72C9"
-        android:text="Поиск"
+        android:text="@string/search"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

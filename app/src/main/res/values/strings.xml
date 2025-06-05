@@ -15,7 +15,9 @@
     <string name="watering_format">Watering: %s</string>
     <string name="sunlight_format">Sunlight: %s</string>
     <string name="cycle_format">Cycle: %s</string>
-    
+    <string name="search">Поиск</string>
+    <string name="vvodtext">Введите название растения</string>
+
     <!-- Error messages -->
     <string name="error_invalid_plant">Некорректные данные растения</string>
     <string name="error_loading_plant_details">Ошибка загрузки данных: %s</string>
@@ -25,4 +27,5 @@
     <!-- Plant information -->
     <string name="unknown_plant_name">Название неизвестно</string>
     <string name="scientific_name_not_available">Научное название отсутствует</string>
+    <string name="info_not_available">Информация отсутствует</string>
 </resources>
