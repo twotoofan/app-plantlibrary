@@ -37,9 +37,11 @@ class SearchActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = PlantSearchAdapter { plant: Plant ->
             val intent = Intent(this, PlantCardActivity::class.java)
-            intent.putExtra("Plant_id", plant.id)
+            intent.putExtra("plant", plant)
             startActivity(intent)
         }
+
+
 
         recyclerView.adapter = adapter
     }

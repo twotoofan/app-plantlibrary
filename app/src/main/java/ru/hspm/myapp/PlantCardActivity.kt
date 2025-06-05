@@ -4,75 +4,37 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.gson.annotations.SerializedName
-import ru.hspm.myapp.api.NetworkModule
+import coil.load
 import ru.hspm.myapp.data.Plant
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-
-data class DefaultImage(
-    @SerializedName("regular_url")
-    val regularUrl: String?
-)
 
 class PlantCardActivity : AppCompatActivity() {
-    private lateinit var plantImage: ImageView
-    private lateinit var plantCommonName: TextView
-    private lateinit var plantScientificName: TextView
-    private lateinit var wateringInfo: TextView
-    private lateinit var sunlightInfo: TextView
-    private lateinit var cycleInfo: TextView
-    private lateinit var diseaseInfo: TextView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_plantcard)
 
-        initViews()
-        
-        // Get plant ID from intent
-        val plantId = intent.getIntExtra("plant_id", -1)
-        if (plantId != -1) {
-            loadPlantData(plantId)
+        // Получаем объект Plant из Intent
+        val plant = intent.getSerializableExtra("plant") as? Plant
+
+        // Инициализируем view-элементы
+        val plantImage = findViewById<ImageView>(R.id.plantImage)
+        val plantCommonName = findViewById<TextView>(R.id.plantCommonName)
+        val plantScientificName = findViewById<TextView>(R.id.plantScientificName)
+        val wateringInfo = findViewById<TextView>(R.id.wateringInfo)
+        val sunlightInfo = findViewById<TextView>(R.id.sunlightInfo)
+        val cycleInfo = findViewById<TextView>(R.id.cycleInfo)
+        //val diseaseInfo = findViewById<TextView>(R.id.diseaseInfo)
+
+        plant?.let {
+            // Загрузка изображения
+            plantImage.load(it.defaultImage?.regularUrl)
+
+            // Заполнение текстовых полей
+            plantCommonName.text = it.commonName ?: "Без названия"
+            plantScientificName.text = it.scientificName?.joinToString(", ") ?: "Научное название отсутствует"
+            wateringInfo.text = "Полив: ${it.watering ?: "нет данных"}"
+            sunlightInfo.text = "Свет: ${it.sunlight?.joinToString(", ") ?: "нет данных"}"
+            cycleInfo.text = "Цикл: ${it.cycle ?: "нет данных"}"
+            //diseaseInfo.text = it.diseaseInfo ?: ""
         }
     }
-
-    private fun initViews() {
-        plantImage = findViewById(R.id.plantImage)
-        plantCommonName = findViewById(R.id.plantCommonName)
-        plantScientificName = findViewById(R.id.plantScientificName)
-        wateringInfo = findViewById(R.id.wateringInfo)
-        sunlightInfo = findViewById(R.id.sunlightInfo)
-        cycleInfo = findViewById(R.id.cycleInfo)
-        diseaseInfo = findViewById(R.id.diseaseInfo)
-    }
-
-    private fun loadPlantData(plantId: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                // Replace "YOUR_API_KEY" with actual API key
-                val response = NetworkModule.perenualApi.getPlants(
-                    apiKey = "sk-lmtr68402c6b1d2e810843",
-                    query = plantId.toString()
-                )
-                
-                val plant = response.data.firstOrNull()
-                plant?.let { displayPlantData(it) }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                // Handle error
-            }
-        }
-    }
-
-    private suspend fun displayPlantData(plant: Plant) = withContext(Dispatchers.Main) {
-        plantCommonName.text = plant.commonName ?: "Без названия"
-        plantScientificName.text = plant.scientificName?.joinToString(", ") ?: "Научное название отсутствует"
-        wateringInfo.text = plant.watering ?: ""
-        sunlightInfo.text = plant.sunlight?.joinToString(", ") ?: ""
-        cycleInfo.text = plant.cycle ?: ""
-    }
-
 }

@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import ru.hspm.myapp.R
 import ru.hspm.myapp.data.Plant
+import com.google.gson.Gson
+
 
 class PlantSearchAdapter(
     private val onPlantClick: (Plant) -> Unit
