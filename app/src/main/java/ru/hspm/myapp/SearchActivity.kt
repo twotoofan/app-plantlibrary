@@ -6,10 +6,13 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.hspm.myapp.adapter.PlantSearchAdapter
@@ -19,6 +22,7 @@ import ru.hspm.myapp.data.Plant
 class SearchActivity : AppCompatActivity() {
     private lateinit var searchInput: TextInputEditText
     private lateinit var adapter: PlantSearchAdapter
+    private var searchJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +30,7 @@ class SearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_search)
 
         setupViews()
-        setupSearchButton()
+        setupSearchInput()
     }
 
     private fun setupViews() {
@@ -35,19 +39,32 @@ class SearchActivity : AppCompatActivity() {
         // Setup RecyclerView
         val recyclerView = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.searchResults)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = PlantSearchAdapter { plant: Plant ->
-            val intent = Intent(this, PlantCardActivity::class.java)
-            intent.putExtra("Plant_id", plant.id)
-            startActivity(intent)
+        
+        adapter = PlantSearchAdapter { plant ->
+            navigateToPlantDetails(plant)
         }
-
         recyclerView.adapter = adapter
     }
 
-    private fun setupSearchButton() {
+    private fun setupSearchInput() {
+        // Add text change listener for automatic search
+        searchInput.addTextChangedListener { text ->
+            searchJob?.cancel()
+            if (!text.isNullOrBlank()) {
+                searchJob = CoroutineScope(Dispatchers.Main).launch {
+                    delay(500) // Debounce for 500ms
+                    performSearch(text.toString())
+                }
+            } else {
+                adapter.updatePlants(emptyList())
+            }
+        }
+
+        // Setup search button
         findViewById<View>(R.id.searchButton).setOnClickListener {
             val query = searchInput.text?.toString()
             if (!query.isNullOrBlank()) {
+                searchJob?.cancel()
                 performSearch(query)
             }
         }
@@ -56,27 +73,43 @@ class SearchActivity : AppCompatActivity() {
     private fun performSearch(query: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = NetworkModule.perenualApi.getPlants(
+                val response = NetworkModule.perenualApi.searchPlants(
                     apiKey = "sk-lmtr68402c6b1d2e810843",
                     query = query
                 )
                 
                 withContext(Dispatchers.Main) {
+                    if (response.data.isEmpty()) {
+                        showMessage("No plants found for '$query'")
+                    }
                     adapter.updatePlants(response.data)
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        this@SearchActivity,
-                        "Ошибка поиска: ${e.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showError("Search failed: ${e.message}")
                 }
             }
         }
+    }
+
+    private fun navigateToPlantDetails(plant: Plant) {
+        val intent = Intent(this, PlantCardActivity::class.java).apply {
+            putExtra("plant", plant)
+            putExtra("plant_id", plant.id) // Fallback
+        }
+        startActivity(intent)
+    }
+
+    private fun showError(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     fun goBackToMain(view: View) {
         finish()
     }
 }
+

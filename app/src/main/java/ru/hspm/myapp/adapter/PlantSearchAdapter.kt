@@ -9,8 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import ru.hspm.myapp.R
 import ru.hspm.myapp.data.Plant
-import com.google.gson.Gson
-
 
 class PlantSearchAdapter(
     private val onPlantClick: (Plant) -> Unit
@@ -24,8 +22,9 @@ class PlantSearchAdapter(
     }
 
     override fun onBindViewHolder(holder: PlantViewHolder, position: Int) {
-        holder.bind(plants[position])
-        holder.itemView.setOnClickListener { onPlantClick(plants[position]) }
+        val plant = plants.getOrNull(position) ?: return
+        holder.bind(plant)
+        holder.itemView.setOnClickListener { onPlantClick(plant) }
     }
 
     override fun getItemCount() = plants.size
@@ -41,9 +40,30 @@ class PlantSearchAdapter(
         private val image: ImageView = itemView.findViewById(R.id.plantImage)
 
         fun bind(plant: Plant) {
-            name.text = plant.commonName ?: "Без названия"
-            scientific.text = plant.scientificName?.joinToString(", ") ?: "Научное название отсутствует"
-            image.load(plant.defaultImage?.regularUrl)
+            try {
+                name.text = plant.commonName.ifEmpty { 
+                    itemView.context.getString(R.string.unknown_plant_name) 
+                }
+                scientific.text = plant.getDisplayScientificName().ifEmpty { 
+                    itemView.context.getString(R.string.scientific_name_not_available)
+                }
+                
+                val imageUrl = plant.getImageUrl()
+                if (imageUrl.isNotEmpty()) {
+                    image.load(imageUrl) {
+                        crossfade(true)
+                        placeholder(R.drawable.ic_launcher_background)
+                        error(R.drawable.ic_launcher_background)
+                    }
+                } else {
+                    image.setImageResource(R.drawable.ic_launcher_background)
+                }
+            } catch (e: Exception) {
+                // Fallback to safe defaults if anything fails
+                name.text = itemView.context.getString(R.string.error_loading_plant)
+                scientific.text = ""
+                image.setImageResource(R.drawable.ic_launcher_background)
+            }
         }
     }
 }

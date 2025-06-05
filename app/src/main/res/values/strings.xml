@@ -12,4 +12,17 @@
     <string name="nazv3">Каладиум</string>
     <string name="nazv4">Сциндаптус</string>
     <string name="kom">Комнатные растения</string>
+    <string name="watering_format">Watering: %s</string>
+    <string name="sunlight_format">Sunlight: %s</string>
+    <string name="cycle_format">Cycle: %s</string>
+    
+    <!-- Error messages -->
+    <string name="error_invalid_plant">Некорректные данные растения</string>
+    <string name="error_loading_plant_details">Ошибка загрузки данных: %s</string>
+    <string name="error_displaying_plant_details">Ошибка отображения данных растения</string>
+    <string name="error_loading_plant">Ошибка загрузки растения</string>
+    
+    <!-- Plant information -->
+    <string name="unknown_plant_name">Название неизвестно</string>
+    <string name="scientific_name_not_available">Научное название отсутствует</string>
 </resources>
